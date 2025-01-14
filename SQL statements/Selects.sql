@@ -1,3 +1,4 @@
+
 SELECT * from course;
 
 SELECT * from assignments
