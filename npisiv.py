@@ -6,73 +6,11 @@ from operator import indexOf
 import discord
 from discord.ext import commands
 from time import sleep
-import time
+import myCommands as mc
 from dotenv import load_dotenv
 
 
-def currclass():
-    #            0              1            2           3            4             5
-    courses = ["OSYS 1000", "PROG 2007","SAAD 1001", "PROG 2700", "PROG 1400", "ICOM 2701"]
 
-    classSchedule = dict(Monday=[courses[0], courses[1], "BREAK", courses[1], courses[2]],
-                         Tuesday=[courses[1], courses[3], "BREAK", courses[3], courses[4]],
-                         Wednesday=[courses[3], courses[4], "BREAK", courses[4], courses[2]],
-                         Thursday=[courses[3], courses[0], "BREAK", courses[0], courses[5]],
-                         Friday="No Classes on Friday")
-
-    now = datetime.datetime.now()
-    print(now.strftime("%A"))
-
-    todaysClasses = classSchedule[now.strftime("%A")]
-
-    currTime = float(now.strftime("%H.%M"))
-    print(currTime)
-
-    if 0 < currTime < 10.30:
-        return todaysClasses[0]
-    elif 10.30 < currTime < 11.30:
-        return todaysClasses[1]
-    elif 11.30 < currTime < 12.30:
-        return todaysClasses[2]
-    elif 12.30 < currTime < 13.30:
-        return todaysClasses[3]
-    elif 13.30 < currTime < 15.30:
-        return todaysClasses[4]
-
-
-def nextclass():
-
-    daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    #            0              1            2           3            4             5
-    courses = ["OSYS 1000", "PROG 2007","SAAD 1001", "PROG 2700", "PROG 1400", "ICOM 2701"]
-
-    classSchedule = dict(Monday=[courses[0], courses[1], "BREAK", courses[1], courses[2]],
-                         Tuesday=[courses[1], courses[3], "BREAK", courses[3], courses[4]],
-                         Wednesday=[courses[3], courses[4], "BREAK", courses[4], courses[2]],
-                         Thursday=[courses[3], courses[0], "BREAK", courses[0], courses[5]],
-                         Friday="No Classes on Friday")
-
-    now = datetime.datetime.now()
-    print(now.strftime("%A"))
-
-    todaysClasses = classSchedule[now.strftime("%A")]
-    tommorowsClasses = classSchedule[daysofweek[1 + daysofweek.index(now.strftime("%A"))]]
-
-    currTime = float(now.strftime("%H.%M"))
-    print(currTime)
-
-    if 0 < currTime < 8.30:
-        return todaysClasses[0]
-    elif 8.30 < currTime < 10.30:
-        return todaysClasses[1]
-    elif 10.30 < currTime < 11.30:
-        return todaysClasses[2]
-    elif 11.30 < currTime < 12.30:
-        return todaysClasses[3]
-    elif 13.30 < currTime < 15.30:
-        return todaysClasses[4]
-    elif 13.30 < currTime < 15.30:
-        return tommorowsClasses[0]
 
 load_dotenv()
 # API Tokens
@@ -154,14 +92,18 @@ async def PING(ctx: context):
 
 @bot.command()
 async def current(ctx:context):
-    await ctx.send(currclass())
+    await ctx.send(mc.currclass())
 
 @bot.command()
 async def next(ctx: context):
     sleep(.4)
-    await ctx.send(nextclass())
+    await ctx.send(mc.nextclass())
 
-
-
+@bot.command()
+async def list(ctx: context):
+    sleep(.4)
+    await ctx.send("Sure, here is a list of things i can do.\n")
+    sleep(.6)
+    await ctx.send(mc.commands())
 
 bot.run(TOKEN)
