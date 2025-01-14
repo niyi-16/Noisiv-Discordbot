@@ -66,11 +66,6 @@ async def on_message(m:message):
             # await m.channel.send(f"Hey there <@{m.author.id}>")
 
 
-
-
-
-
-
 @bot.command()
 async def ping(ctx:context):
     userid = ctx.author.id
@@ -106,4 +101,7 @@ async def list(ctx: context):
     sleep(.6)
     await ctx.send(mc.commands())
 
+@bot.command()
+async def assignments(ctx: context):
+    await ctx.send(mc.assignments())
 bot.run(TOKEN)
