@@ -6,6 +6,8 @@ bot_functions = {
     "!duedates": "Get all due dates for the sem",
     "!list": "list all commands"
 }
+
+
 daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
 #            0              1            2           3            4             5
