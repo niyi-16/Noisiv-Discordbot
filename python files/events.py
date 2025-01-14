@@ -27,6 +27,8 @@ def currclassT(db):
     mycursor.execute(query)
 
     result = mycursor.fetchone()
+
+
     return f"You currently have {result['c_id']} - {result['c_name']}"
 
 

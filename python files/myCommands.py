@@ -1,4 +1,10 @@
 import datetime
+import os
+
+import mysql.connector
+from dotenv import load_dotenv
+
+# dict of bot functions
 bot_functions = {
     "!curr": "Get the current class",
     "!next": "Get the next class",
