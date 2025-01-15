@@ -88,7 +88,7 @@ async def PING(ctx: context):
     await ctx.channel.send(f"Jeez, no need to be aggressive😒. I'm not going anywhere (at least not any time soon) <@{userid}>")
 
 @bot.command()
-async def current(ctx:context):
+async def curr(ctx:context):
     await ctx.send(mc.currclass())
 
 @bot.command()
