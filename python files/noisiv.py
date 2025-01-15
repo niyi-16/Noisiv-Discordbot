@@ -1,4 +1,6 @@
 import os
+import sys
+
 import discord
 from discord.ext import commands
 from time import sleep
@@ -56,11 +58,15 @@ async def on_message(m:message):
         await bot.process_commands(m)
 
     elif m.author != bot.user:
-        if content.lower() in [str(bot.user.id), bot.user.name.lower(), "hello", "hi"]:
+        if ((content.lower() in [str(bot.user.id), bot.user.name.lower(), "hello", "hi"]) or
+            ("bot" in content.lower())):
             sleep(.5)
             await m.channel.send(f"Hey there <@{m.author.id}>")
-            # await m.channel.send(f"Hey there <@{m.author.id}>")
 
+        # Dont forget this here lmao
+        elif content.lower() == "stop":
+            sleep(5)
+            sys.exit(0)
 
 @bot.command()
 async def ping(ctx:context):
@@ -82,7 +88,7 @@ async def PING(ctx: context):
     await ctx.channel.send(f"Jeez, no need to be aggressive😒. I'm not going anywhere (at least not any time soon) <@{userid}>")
 
 @bot.command()
-async def current(ctx:context):
+async def curr(ctx:context):
     await ctx.send(mc.currclass())
 
 @bot.command()
@@ -100,4 +106,7 @@ async def list(ctx: context):
 @bot.command()
 async def assignments(ctx: context):
     await ctx.send(mc.assignments())
+
+
 bot.run(TOKEN)
+
