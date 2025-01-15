@@ -1,6 +1,5 @@
 import datetime
 import os
-from idlelib.query import Query
 
 import mysql.connector
 import random
@@ -10,12 +9,16 @@ from dotenv import load_dotenv
 
 
 # dict of bot functions
-bot_functions = {
+bot_functions_call = {
     "!curr": "Get the current class",
     "!next": "Get the next class",
     "!assignments": "Get all assignments due within two weeks",
-    "!duedates": "Get all due dates for the sem",
+    "!duedates": "Get all due dates for the rest of the sem",
     "!list": "list all commands"
+}
+
+bot_functions_auto = {
+    "!remind": "Send a reminder that something is due depending on week",
 }
 
 def currclass() -> str:
@@ -48,7 +51,7 @@ def currclass() -> str:
     result = mycursor.fetchone()
 
     if result is None:
-        response = ["The day is over, try !nextclass, !assignments, !duedates or !commands for a list of my commands^^",
+        response = ["The day is over, try !next, !assignments, !duedates or !list for a list of my commands^^",
                 "Schools over, GO HOME!!"]
 
         return response[random.randint(0,1)]
@@ -95,19 +98,38 @@ def nextclass():
 
     return f"The Next class is {result['c_code']} - {result['c_name']}"
 
-#TODO
-def assignments():
-    pass
+
+def assignments() -> dict:
+    load_dotenv()
+    mydb = mysql.connector.connect(
+        host=os.getenv("HOST"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+        database=os.getenv("DATABASE")
+    )
+
+    mycursor = mydb.cursor(dictionary=True)
+
+    query = '''SELECT course.code_name as 'c_code', course.name as 'c_name',
+                        assignments.assignmentName as 'a_name', 
+                         DATE_FORMAT(assignments.dateDue,'%W, %D of %b') as 'a_due',
+                        time_format(assignments.timeDue, '%h:%i') as 'a_time'
+                from assignments
+                join course on course.id = assignments.course_id
+                where course_id is not null
+                and dateDue <= (curdate() + interval 2 week)
+                order by dateDue;'''
+
+    mycursor.execute(query)
+    result = mycursor.fetchall()
+
+    return result
 
 def duedates():
     pass
 
 def commands():
     item = ""
-    for commands, desc in bot_functions.items():
+    for commands, desc in bot_functions_call.items():
         item += f"{commands} - {desc}\n"
     return item
-
-print(currclass())
-# print(nextclass())
-print(commands())

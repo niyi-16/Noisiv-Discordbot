@@ -105,7 +105,10 @@ async def list(ctx: context):
 
 @bot.command()
 async def assignments(ctx: context):
-    await ctx.send(mc.assignments())
+    assignment = mc.assignments()
+    for item in assignment:
+        sleep(1)
+        await ctx.send(f"{item["c_code"]} {item['a_name']} is due on {item['a_due']} by {item['a_time']}")
 
 
 bot.run(TOKEN)

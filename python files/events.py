@@ -40,16 +40,42 @@ def currclassT():
 
     return f"You currently have {result['c_id']} - {result['c_name']}"
 
-def assignments():
+def assignments() -> dict:
+    load_dotenv()
+    mydb = mysql.connector.connect(
+        host=os.getenv("HOST"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+        database=os.getenv("DATABASE")
+    )
+
+    mycursor = mydb.cursor(dictionary=True)
+
+    query = '''SELECT course.code_name as 'c_code', course.name as 'c_name',
+                        assignments.assignmentName as 'a_name', 
+                         DATE_FORMAT(assignments.dateDue,'%W, %D of %b') as 'a_due',
+                        time_format(assignments.timeDue, '%h:%i') as 'a_time'
+                from assignments
+                join course on course.id = assignments.course_id
+                where course_id is not null
+                and dateDue <= (curdate() + interval 2 week)
+                order by dateDue;'''
+
+    mycursor.execute(query)
+    result = mycursor.fetchall()
+
+    return result
 
 
 def main():
-    assignments = "assignments"
+    #Table Names
+    assignment = assignments()
     course = "course"
     tests = "tests"
     times = "times"
 
-    print(currclassT())
+    for item in assignment:
+        print(f"{item["c_code"]} {item['a_name']} is due {item['a_due']} by {item['a_time']}")
 
 if __name__ == '__main__':
     main()
