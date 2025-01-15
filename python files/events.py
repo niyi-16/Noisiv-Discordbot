@@ -1,14 +1,19 @@
 import datetime
 import os
-from time import sleep
-
 import mysql.connector
 from dotenv import load_dotenv
 
-def currclassT(db):
+def currclassT():
 
+    load_dotenv()
 
-    mycursor = db.cursor(dictionary=True)
+    mydb = mysql.connector.connect(
+        host=os.getenv("HOST"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+        database=os.getenv("DATABASE"))
+
+    mycursor = mydb.cursor(dictionary=True)
 
     current = datetime.datetime.now()  # Gets info about the current day "YYYY-MM-DD HH:MM:SS.milliseconds"
 
@@ -22,15 +27,18 @@ def currclassT(db):
                 join course 
                 on course.id = times.course_id 
                 where dayOfWeek = '{currDOW}' 
-                and '11:30:00' between startTime and endTime;"""
+                and '{currTime}' between startTime and endTime;"""
 
     mycursor.execute(query)
 
     result = mycursor.fetchone()
+    if result is None:
+        return "Schools over, GO HOME!!"
 
+    mycursor.close()
+    mydb.close()
 
     return f"You currently have {result['c_id']} - {result['c_name']}"
-
 
     # td_Schdl = classSchedule[currDOW]  # Uses currentDow as a key to retrieve day's schedule
 
@@ -56,23 +64,12 @@ def currclassT(db):
     # return "The day is over, try !nextclass, !assignments, !duedates or !commands for a list of my commands^^"
 
 def main():
-
-    load_dotenv()
-
-    mydb = mysql.connector.connect(
-        host=os.getenv('HOST'),
-        user=os.getenv('USER'),
-        password=os.getenv('PASS'),
-        database=os.getenv('DATABASE'))
-
-
     assignments = "assignments"
     course = "course"
     tests = "tests"
     times = "times"
 
-    print(currclassT(mydb))
-
+    print(currclassT())
 
 if __name__ == '__main__':
     main()
