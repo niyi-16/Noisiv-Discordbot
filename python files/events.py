@@ -66,6 +66,18 @@ def assignments() -> dict:
 
     return result
 
+def duedates() -> dict:
+    load_dotenv()
+    mydb = mysql.connector.connect(
+        host=os.getenv("HOST"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+        database=os.getenv("DATABASE")
+    )
+
+    mycursor = mydb.cursor(dictionary=True)
+
+    query  = ""
 
 def main():
     #Table Names
