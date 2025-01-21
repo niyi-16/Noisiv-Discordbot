@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 
 # dict of bot functions
 bot_functions_call = {
-    "!curr": "Get the current class",
-    "!next": "Get the next class",
+    "!curr": "Get the current class",  #Done
+    "!next": "Get the next class", # Done
     "!assignments": "Get all assignments due within two weeks",
     "!duedates": "Get all due dates for the rest of the sem",
     "!list": "list all commands"
@@ -117,7 +117,7 @@ def assignments() -> dict:
                 from assignments
                 join course on course.id = assignments.course_id
                 where course_id is not null
-                and dateDue <= (curdate() + interval 2 week)
+                and dateDue between curdate() and (curdate() + interval 2 week) 
                 order by dateDue;'''
 
     mycursor.execute(query)

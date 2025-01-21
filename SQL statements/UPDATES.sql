@@ -23,3 +23,6 @@ where assignmentName like '%2700%';
 UPDATE assignments
 set course_id = 6
 where assignmentName like '%saad%';
+
+
+rollback;

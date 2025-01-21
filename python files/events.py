@@ -3,7 +3,7 @@ import os
 import mysql.connector
 from dotenv import load_dotenv
 
-def currclassT():
+def currclassT():  #Done
 
     load_dotenv()
 
@@ -40,7 +40,7 @@ def currclassT():
 
     return f"You currently have {result['c_id']} - {result['c_name']}"
 
-def assignments() -> dict:
+def assignments() -> dict: #Done:
     load_dotenv()
     mydb = mysql.connector.connect(
         host=os.getenv("HOST"),
@@ -58,7 +58,7 @@ def assignments() -> dict:
                 from assignments
                 join course on course.id = assignments.course_id
                 where course_id is not null
-                and dateDue <= (curdate() + interval 2 week)
+                and dateDue between curdate() and (curdate() + interval 2 week)
                 order by dateDue;'''
 
     mycursor.execute(query)

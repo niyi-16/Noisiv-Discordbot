@@ -33,7 +33,7 @@ where dayOfWeek = dayname(current_date)
   and startTime > current_time
 limit 1;
 
-
+# Assignments due within two weeks of the current day.
 SELECT course.code_name as 'c_code',
                         assignments.assignmentName as 'a_name',
                         DATE_FORMAT(assignments.dateDue,'%W, %D of %b')  as 'a_due',
@@ -41,5 +41,10 @@ SELECT course.code_name as 'c_code',
 from assignments
 join course on course.id = assignments.course_id
 where course_id is not null
-and dateDue <= (curdate() + interval 2 week)
+and dateDue between curdate() and (curdate() + interval 2 week)
 order by dateDue;
+
+select curdate();
+select course.code_name, assignments.*
+from course
+join assignments on course.id = assignments.course_id;
