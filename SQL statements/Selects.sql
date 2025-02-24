@@ -47,4 +47,4 @@ order by dateDue;
 select curdate();
 select course.code_name, assignments.*
 from course
-join assignments on course.id = assignments.course_id;
+JOIN assignments on course.id = assignments.course_id;

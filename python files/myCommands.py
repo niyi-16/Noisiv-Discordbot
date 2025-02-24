@@ -117,7 +117,7 @@ def assignments() -> dict:
                 from assignments
                 join course on course.id = assignments.course_id
                 where course_id is not null
-                and dateDue between curdate() and (curdate() + interval 2 week) 
+                and dateDue between curdate() and (curdate() + interval 1 week) 
                 order by dateDue;'''
 
     mycursor.execute(query)
@@ -126,7 +126,15 @@ def assignments() -> dict:
     return result
 
 def duedates():
-    pass
+    load_dotenv()
+    mydb = mysql.connector.connect(
+        host=os.getenv("HOST"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+        database=os.getenv("DATABASE")
+    )
+
+    return ""
 
 def commands():
     item = ""
