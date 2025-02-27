@@ -1,93 +1,183 @@
 import datetime
-bot_functions = {
-    "!curr": "Get the current class",
-    "!next": "Get the next class",
-    "!assignments": "Get all assignments due within two weeks",
-    "!duedates": "Get all due dates for the sem",
-    "!list": "list all commands"
+import os
+
+import mysql.connector
+import random
+from dotenv import load_dotenv
+
+##TODO Polish code its messy!
+
+
+# dict of bot functions
+
+bot_functions_call = [
+    {"command": "!curr", "description": "Get the current class"},  # Done
+    {"command": "!next", "description": "Get the next class"},  # Done
+    {"command": "!assignments", "description": "Get all assignments due within a week"},
+    {"command": "!tests", "description": "Get all tests due within a week"},
+    {"command": "!duedates", "description": "Get all due dates for the rest of the semester"},
+    {"command": "!list", "description": "List all commands"},
+    {"command": "!courses", "description": "Get all courses for the current semester"},
+    {"command": "!remind <COURSE-ID>", "description": "Subscribe to reminders about a course for th week"},
+]
+bot_functions_auto = {
+    "!remind": "Send a reminder that something is due depending on week",
 }
 
+load_dotenv()
 
-daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+mydb = mysql.connector.connect(
+    host=os.getenv("HOST"),
+    user=os.getenv("USER"),
+    password=os.getenv("PASS"),
+    database=os.getenv("DATABASE"))
 
-#            0              1            2           3            4             5
-courses = ["OSYS 1000", "PROG 2007","SAAD 1001", "PROG 2700", "PROG 1400", "ICOM 2701"]
-
-classSchedule = dict(Monday=[courses[0], courses[1], "BREAK", courses[1], courses[2]],
-                     Tuesday=[courses[1], courses[3], "BREAK", courses[3], courses[4]],
-                     Wednesday=[courses[3], courses[4], "BREAK", courses[4], courses[2]],
-                     Thursday=[courses[3], courses[0], "BREAK", courses[0], courses[5]],
-                     Friday="No Classes on Friday")
 
 def currclass() -> str:
-    """
+    my_cursor = mydb.cursor(dictionary=True)
 
-    :return: The Current Class based on the time
-    """
+    current = datetime.datetime.now()  # Gets info about the current day "YYYY-MM-DD HH:MM:SS.milliseconds"
 
-    current = datetime.datetime.now() # Gets info about the current day "YYYY-MM-DD HH:MM:SS.milliseconds"
-    
-    currDOW = current.strftime("%A") # Extracts day of week from current
-    currTime = float(current.strftime("%H.%M")) # Extracts the current time from current as a decimal number i.e 12:34 -> 12.34
-    td_Schdl = classSchedule[currDOW] #Uses currentDow as a key to retrieve day's schedule
-    
-    print(f"Today is a {currDOW}\n"+
-          f"The current time is {currTime}\n"+
-          f"The Classes lined up for the day are {str (td_Schdl)}\n")
+    current_day_of_week = current.strftime("%A")  # Extracts day of week from current
+    current_time = (current.strftime("%H:%M:%S"))  # Extracts the current time in specified format
 
-    if 0 < currTime < 10.30: # 12AM - 10:30AM
-        return f"You are currently in {td_Schdl[0]}"
+    query = f"""SELECT course.code_name as 'c_code', course.name as 'c_name'
+                    from times 
+                    join course 
+                    on course.id = times.course_id 
+                    where dayOfWeek = '{current_day_of_week}' 
+                    and '{current_time}' between start and end;"""
 
-    elif 10.30 < currTime < 11.30: # 10:30AM - 11:30AM
-        return f"You are currently in {td_Schdl[1]}"
+    my_cursor.execute(query)
 
-    elif 11.30 < currTime < 12.30: # 11:30AM - 12:30AM
-        return f"You are currently in {td_Schdl[2]}"
+    result = my_cursor.fetchone()
 
-    elif 12.30 < currTime < 13.30: #12:30AM - 1:30PM
-        return f"You are currently in {td_Schdl[3]}"
+    if result is None:
+        response = ["The day is over, try !next, !assignments, !duedates or !list for a list of my commands^^",
+                    "Schools over, GO HOME!!"]
 
-    elif 13.30 < currTime < 15.30: #12:30AM - 3:30PM
-        return f"You are currently in {td_Schdl[4]}"
+        return response[random.randint(0, 1)]
 
-    return "The day is over, try !nextclass, !assignments, !duedates or !commands for a list of my commands^^"
+    my_cursor.close()
+    mydb.close()
+
+    return f"You currently have {result['c_code']} - {result['c_name']}"
+
 
 def nextclass():
+    my_cursor = mydb.cursor(dictionary=True)
 
     current = datetime.datetime.now() # Gets info about the current day "YYYY-MM-DD HH:MM:SS.milliseconds"
 
-    currDOW = current.strftime("%A") # Extracts day of week from current
-    currTime = float(current.strftime("%H.%M")) # Extracts the current time from current as a decimal number i.e 12:34 -> 12.34
-    td_Schdl = classSchedule[currDOW] #Uses currentDow as a key to retrieve day's schedule
-    tmr_Schdl = classSchedule[daysofweek[1 + daysofweek.index(currDOW)]]
+    current_day_of_week = current.strftime("%A") # Extracts day of week from current
+    current_time = (current.strftime("%H:%M:%S"))  # Extracts the current time in specified format
+
+    if current_day_of_week in ["Saturday", "Sunday"]:
+        return "The week is over, try /assignments, /duedates or /list for a list of my commands^^"
 
 
-    if 0 < currTime < 8.30:
-        return f"Your next class is {td_Schdl[0]}"
-    elif 8.30 < currTime < 10.30:
-        return f"Your next class is {td_Schdl[1]}"
-    elif 10.30 < currTime < 11.30:
-        return f"Your next class is {td_Schdl[2]}"
-    elif 11.30 < currTime < 12.30:
-        return f"Your next class is {td_Schdl[3]}"
-    elif 12.30 < currTime < 13.30:
-        return f"Your next class is {td_Schdl[4]}"
-    elif currTime > 13.30:
-        return f"Your next class is {tmr_Schdl[0]}"
+    query = f"""SELECT course.code_name as 'c_code', course.name as 'c_name', times.dayOfWeek as 'dow', start
+                from times
+                join course
+                on course.id = times.course_id
+                where dayOfWeek = '{current_day_of_week}'
+                  and start > '{current_time}'
+                limit 1;"""
+    my_cursor.execute(query)
 
-#TODO
-def assignments():
-    pass
+    result = my_cursor.fetchone()
+    print(result)
+
+    if result is None:
+        return "The day is over, try !next, !assignments, !duedates or !list for a list of my commands^^"
+
+    return result
+    # return f"The Next class is {result['c_code']} - {result['c_name']}"
+
+
+def assignments() -> list:
+    my_cursor = mydb.cursor(dictionary=True)
+
+    query = '''SELECT course.code_name as 'c_code', course.name as 'c_name',
+                        assignments.assignmentName as 'a_name', 
+                         DATE_FORMAT(assignments.dateDue,'%Y/%m/%d') as 'a_due',
+                         # DATE_FORMAT(assignments.dateDue,'%W, %D of %b') as 'a_due',
+                        time_format(assignments.timeDue, '%H:%i:%s') as 'a_time'
+                from assignments
+                join course on course.id = assignments.course_id
+                where course_id is not null
+                and dateDue between curdate() and (curdate() + interval 2 week) 
+                order by dateDue;'''
+
+    my_cursor.execute(query)
+    result = my_cursor.fetchall()
+
+    return result
 
 def duedates():
-    pass
+    my_cursor = mydb.cursor(dictionary=True)
+
+    query = '''
+  SELECT combined.name, due, time, code_name
+FROM (
+         SELECT tests.testName AS `name`,
+                tests.course_id as id,
+                tests.dateDue as `due`,
+                tests.timeStart AS `time`
+         FROM tests
+
+         UNION
+
+         SELECT assignments.assignmentName AS `name`,
+                assignments.course_id as id,
+            assignments.dateDue  AS `due`,
+                assignments.timeDue  AS `time`
+         FROM assignments
+     ) AS combined
+join course on combined.id = course.id
+WHERE combined.name IS NOT NULL
+order by due asc
+    '''
+
+    my_cursor.execute(query)
+    result = my_cursor.fetchall()
+    return result
+
+
+def tests():
+    my_cursor = mydb.cursor(dictionary=True)
+
+    query = '''SELECT course.code_name as 'c_code', course.name as 'c_name',
+                    tests.testName as 't_name', 
+                         DATE_FORMAT(tests.dateDue,'%W, %D of %b') as 't_due',
+                        time_format(tests.timeStart, '%h:%i') as 't_time'
+                from tests
+                join course on course.id = tests.course_id
+                where course_id is not null
+                and dateDue between curdate() and (curdate() + interval 1 week) 
+                order by dateDue;'''
+
+    my_cursor.execute(query)
+    result = my_cursor.fetchall()
+
+    return result
+
+
+def courses() -> list:
+    my_cursor = mydb.cursor(dictionary=True)
+
+    query = '''
+    Select code_name as 'c_code', name 
+    from course; 
+    '''
+
+    my_cursor.execute(query)
+    result = my_cursor.fetchall()
+
+    return result
 
 def commands():
     item = ""
-    for commands, desc in bot_functions.items():
+    for commands, desc in bot_functions_call.items():
         item += f"{commands} - {desc}\n"
     return item
-
-print(currclass())
-print(nextclass())
-print(commands())

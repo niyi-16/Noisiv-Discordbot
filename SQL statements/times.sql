@@ -1,0 +1,16 @@
+UPDATE courses.times SET course_id = 2, dayOfWeek = 'Monday', start = '08:30:00', end = '10:30:00';
+UPDATE courses.times SET course_id = 4, dayOfWeek = 'Monday', start = '10:30:00', end = '11:30:00';
+UPDATE courses.times SET course_id = 4, dayOfWeek = 'Monday', start = '12:30:00', end = '13:30:00';
+UPDATE courses.times SET course_id = 6, dayOfWeek = 'Monday', start = '13:30:00', end = '15:30:00';
+UPDATE courses.times SET course_id = 4, dayOfWeek = 'Tuesday', start = '08:30:00', end = '10:30:00';
+UPDATE courses.times SET course_id = 5, dayOfWeek = 'Tuesday', start = '10:30:00', end = '11:30:00';
+UPDATE courses.times SET course_id = 5, dayOfWeek = 'Tuesday', start = '12:30:00', end = '13:30:00';
+UPDATE courses.times SET course_id = 3, dayOfWeek = 'Tuesday', start = '13:30:00', end = '15:30:00';
+UPDATE courses.times SET course_id = 5, dayOfWeek = 'Wednesday', start = '08:30:00', end = '10:30:00';
+UPDATE courses.times SET course_id = 3, dayOfWeek = 'Wednesday', start = '10:30:00', end = '11:30:00';
+UPDATE courses.times SET course_id = 3, dayOfWeek = 'Wednesday', start = '12:30:00', end = '13:30:00';
+UPDATE courses.times SET course_id = 6, dayOfWeek = 'Wednesday', start = '13:30:00', end = '15:30:00';
+UPDATE courses.times SET course_id = 5, dayOfWeek = 'Thursday', start = '08:30:00', end = '10:30:00';
+UPDATE courses.times SET course_id = 2, dayOfWeek = 'Thursday', start = '10:30:00', end = '11:30:00';
+UPDATE courses.times SET course_id = 2, dayOfWeek = 'Thursday', start = '12:30:00', end = '13:30:00';
+UPDATE courses.times SET course_id = 1, dayOfWeek = 'Thursday', start = '13:30:00', end = '15:30:00';
