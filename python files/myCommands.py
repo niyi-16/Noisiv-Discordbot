@@ -12,7 +12,8 @@ from dotenv import load_dotenv
 bot_functions_call = {
     "!curr": "Get the current class",  #Done
     "!next": "Get the next class", # Done
-    "!assignments": "Get all assignments due within two weeks",
+    "!assignments": "Get all assignments due within a weeks",
+    "!tests": "Get all tests due within a week",
     "!duedates": "Get all due dates for the rest of the sem",
     "!list": "list all commands"
 }
@@ -135,6 +136,32 @@ def duedates():
     )
 
     return ""
+
+def tests():
+    load_dotenv()
+    mydb = mysql.connector.connect(
+        host=os.getenv("HOST"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASS"),
+        database=os.getenv("DATABASE")
+    )
+
+    mycursor = mydb.cursor(dictionary=True)
+
+    query = '''SELECT course.code_name as 'c_code', course.name as 'c_name',
+                    tests.testName as 't_name', 
+                         DATE_FORMAT(tests.dateDue,'%W, %D of %b') as 't_due',
+                        time_format(tests.timeStart, '%h:%i') as 't_time'
+                from tests
+                join course on course.id = tests.course_id
+                where course_id is not null
+                and dateDue between curdate() and (curdate() + interval 1 week) 
+                order by dateDue;'''
+
+    mycursor.execute(query)
+    result = mycursor.fetchall()
+
+    return result
 
 def commands():
     item = ""

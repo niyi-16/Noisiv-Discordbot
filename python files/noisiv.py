@@ -131,8 +131,16 @@ async def assignments(ctx: context):
         await ctx.send(f"{item["c_code"]} {item['a_name']} is due on {item['a_due']} by {item['a_time']}")
 
 @bot.command()
-async def duedates(ctx:context):
-    await ctx.channel.send()
+async def tests(ctx:context):
+    test = mc.tests()
+
+    if len(test) == 0:
+        await ctx.send("No tests coming up this week")
+
+    else:
+        for item in test:
+            sleep(1)
+            await ctx.send(f"{item["c_code"]} {item['t_name']} is due on {item['t_due']} by {item['t_time']}")
 
 
 bot.run(TOKEN)
